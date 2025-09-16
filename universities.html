@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universities - Assia Hamouni</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/universities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="zhacademie-logo.png" alt="ZHAcademie" style="width: 180px; height: 180px; object-fit: contain;">
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="universities.html" class="nav-link active">
+                    <i class="fas fa-university"></i>
+                    Universities
+                </a>
+                <a href="canvas.html" class="nav-link">
+                    <i class="fas fa-paint-brush"></i>
+                    Canvas
+                </a>
+                <a href="portfolio.html" class="nav-link">
+                    <i class="fas fa-folder"></i>
+                    Portfolio
+                </a>
+                <a href="scores.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Scores
+                </a>
+                <a href="tasks.html" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    Tasks
+                </a>
+                <a href="sat-practice.html" class="nav-link">
+                    <i class="fas fa-pencil-alt"></i>
+                    SAT Practice
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <button id="userMenuBtn" class="user-btn">
+                        <img id="userAvatar" src="" alt="User" class="user-avatar">
+                        <span id="userName">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="userDropdown" class="user-dropdown">
+                        <a href="profile.html" id="profileLink">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="theme-toggle-link" onclick="toggleTheme()">
+                            <i class="fas fa-moon"></i>
+                            Theme
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="header-content">
+                    <h1>Universities</h1>
+                    <p>Track your university applications and requirements</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container enhanced">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, location, or status...">
+                        <button class="search-clear" id="clearSearch" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="planning">Planning</option>
+                        <option value="applied">Applied</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <button class="btn btn-primary" id="addUniversityBtn">
+                        <i class="fas fa-plus"></i>
+                        Add University
+                    </button>
+                </div>
+            </div>
+
+            <div class="statistics-dashboard" id="statisticsDashboard">
+                <div class="stats-grid">
+                    <div class="stat-card total">
+                        <div class="stat-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="totalUniversities">0</span>
+                            <span class="stat-label">Universities</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card planning">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="planningCount">0</span>
+                            <span class="stat-label">Planning</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card applied">
+                        <div class="stat-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="appliedCount">0</span>
+                            <span class="stat-label">Applied</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card accepted">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="acceptedCount">0</span>
+                            <span class="stat-label">Accepted</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card deadlines">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="upcomingDeadlines">0</span>
+                            <span class="stat-label">Deadlines</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card fees">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="totalFees">$0</span>
+                            <span class="stat-label">Total Fees</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="universities-grid" id="universitiesGrid">
+                <div class="loading-state" id="loadingState">
+                    <div class="spinner"></div>
+                    <p>Loading universities...</p>
+                </div>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-content">
+                        <i class="fas fa-university"></i>
+                        <h3>No Universities Added</h3>
+                        <p>Add your first university to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="ai-chat-fab" id="aiChatFab">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="ai-chat-modal" id="aiChatModal">
+        <div class="ai-chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="chat-title">
+                    <h3>University Assistant</h3>
+                    <span class="chat-status">Ask me anything about universities</span>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="chat-resize-btn" id="chatResizeBtn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="chat-close-btn" id="chatCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="ai-chat-messages" id="chatMessages">
+        </div>
+        
+        <div class="ai-chat-input">
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-btn" data-question="How many colleges are in Orlando?">
+                    Colleges in Orlando
+                </button>
+                <button class="quick-btn" data-question="What are the best universities in Florida?">
+                    Florida Universities
+                </button>
+                <button class="quick-btn" data-question="Tell me about scholarship opportunities">
+                    Scholarships
+                </button>
+                <button class="quick-btn" data-question="What's the difference between public and private universities?">
+                    Public vs Private
+                </button>
+            </div>
+            <div class="input-container">
+                <input type="text" id="chatInput" placeholder="Ask about universities, admissions, scholarships..." />
+                <button id="sendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="universityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add University</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="universityForm">
+                <div class="university-search-section">
+                    <div class="search-header">
+                        <h3>Find University</h3>
+                        <p>Search for thousands of universities </p>
+                    </div>
+                    <div class="university-search-container">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="universitySearchInput" placeholder="Search by university name..." autocomplete="off">
+                            <div class="search-loading-inline" id="searchLoading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                        <div class="search-results" id="searchResults" style="display: none;"></div>
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" class="btn btn-outline" id="skipSearchBtn">
+                            <i class="fas fa-edit"></i>
+                            Manual Entry
+                        </button>
+
+                        <div class="search-stats" id="searchStats" style="display: none;">
+                            <span class="results-count">0 results found</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="university-form-section" id="universityFormSection" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="universityName">University Name</label>
+                            <input type="text" id="universityName" class="form-control" required>
+                            <div class="field-source" id="nameSource" style="display: none;">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Verified from university database</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="universityLocation">Location</label>
+                            <input type="text" id="universityLocation" class="form-control" placeholder="City, State">
+                            <div class="field-source" id="locationSource" style="display: none;">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Auto-filled from database</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="university-data-preview" id="universityDataPreview" style="display: none;">
+                        <div class="preview-header">
+                            <h4>University Information</h4>
+                            <span class="data-badge">Official Data</span>
+                        </div>
+                        <div class="preview-grid">
+                            <div class="preview-item">
+                                <span class="preview-label">Type</span>
+                                <span class="preview-value" id="previewType">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">Size</span>
+                                <span class="preview-value" id="previewSize">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">Acceptance Rate</span>
+                                <span class="preview-value" id="previewAcceptance">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">In-State Tuition</span>
+                                <span class="preview-value" id="previewTuitionIn">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">Out-of-State Tuition</span>
+                                <span class="preview-value" id="previewTuitionOut">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">SAT Average</span>
+                                <span class="preview-value" id="previewSAT">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicationFee">Application Fee</label>
+                        <div class="input-with-suggestion">
+                            <input type="number" id="applicationFee" class="form-control" placeholder="0" min="0" step="0.01">
+                            <div class="field-suggestion" id="feeSource" style="display: none;">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Typical fee: $50-$100</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicationDeadline">Application Deadline</label>
+                        <input type="date" id="applicationDeadline" class="form-control">
+                        <div class="field-suggestion" id="deadlineSource" style="display: none;">
+                            <i class="fas fa-calendar"></i>
+                            <span>Common deadlines: Jan 1, Jan 15, Feb 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="universityStatus">Status</label>
+                        <select id="universityStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="applied">Applied</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="universitySemester">Semester</label>
+                        <select id="universitySemester" class="form-control">
+                            <option value="">Select Semester</option>
+                            <option value="Fall 2024">Fall 2024</option>
+                            <option value="Spring 2025">Spring 2025</option>
+                            <option value="Fall 2025">Fall 2025</option>
+                            <option value="Spring 2026">Spring 2026</option>
+                            <option value="Fall 2026">Fall 2026</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="universityWebsite">Website</label>
+                    <input type="text" id="universityWebsite" class="form-control" placeholder="www.university.edu or https://www.university.edu">
+                    <div class="field-source" id="websiteSource" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Official website verified</span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="admissionsEmail">Admissions Email</label>
+                            <input type="email" id="admissionsEmail" class="form-control" placeholder="admissions@university.edu">
+                        </div>
+                        <div class="form-group">
+                            <label for="admissionsPhone">Admissions Phone</label>
+                            <input type="tel" id="admissionsPhone" class="form-control" placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactPerson">Contact Person</label>
+                            <input type="text" id="contactPerson" class="form-control" placeholder="John Smith, Admissions Officer">
+                        </div>
+                        <div class="form-group">
+                            <label for="officeHours">Office Hours</label>
+                            <input type="text" id="officeHours" class="form-control" placeholder="Mon-Fri 9AM-5PM EST">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="requirements">Requirements</label>
+                    <textarea id="requirements" class="form-control" rows="5" placeholder="Enter each requirement on a new line with numbers:&#10;1. Transcripts&#10;2. Letters of recommendation&#10;3. Personal statement&#10;4. SAT/ACT scores"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" class="form-control" rows="3" placeholder="Additional notes about this university..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <span class="btn-text">Save University</span>
+                        <div class="btn-spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete University</h2>
+                <button class="close-btn" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this university? This action cannot be undone.</p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="universityDetailsModal" class="modal">
+        <div class="modal-content university-details-modal">
+            <div class="university-details-header">
+                <div class="header-left">
+                    <div class="university-icon">
+                        <span id="universityInitial">U</span>
+                    </div>
+                    <div class="university-title">
+                        <h2 id="detailsUniversityName">University Name</h2>
+                        <p id="detailsUniversityLocation">Location</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="status-pill" id="modalUniversityStatus">Status</span>
+                    <button class="close-modal-btn" id="closeDetailsModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="university-details-body">
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-label">Application Deadline</span>
+                            <span class="card-value" id="detailsApplicationDeadline">Not set</span>
+                            <div class="countdown-timer" id="deadlineCountdown" style="display: none;">
+                                <div class="countdown-item">
+                                    <span class="countdown-number" id="countdownMonths">0</span>
+                                    <span class="countdown-label">M</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span class="countdown-number" id="countdownDays">0</span>
+                                    <span class="countdown-label">D</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span class="countdown-number" id="countdownHours">0</span>
+                                    <span class="countdown-label">H</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span class="countdown-number" id="countdownMinutes">0</span>
+                                    <span class="countdown-label">M</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span class="countdown-number" id="countdownSeconds">0</span>
+                                    <span class="countdown-label">S</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-label">Application Fee</span>
+                            <span class="card-value" id="detailsApplicationFee">Not set</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-label">Semester</span>
+                            <span class="card-value" id="modalUniversitySemester">Not set</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-label">Website</span>
+                            <span class="card-value" id="detailsUniversityWebsite">Not set</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-section">
+                    <div class="section-header">
+                        <i class="fas fa-address-book"></i>
+                        <h3>Contact Information</h3>
+                    </div>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-content">
+                                <span class="contact-label">Admissions Email</span>
+                                <span class="contact-value" id="detailsAdmissionsEmail">Not provided</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-content">
+                                <span class="contact-label">Phone</span>
+                                <span class="contact-value" id="detailsAdmissionsPhone">Not provided</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="contact-content">
+                                <span class="contact-label">Contact Person</span>
+                                <span class="contact-value" id="detailsContactPerson">Not provided</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-content">
+                                <span class="contact-label">Office Hours</span>
+                                <span class="contact-value" id="detailsOfficeHours">Not provided</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-sections">
+                    <div class="text-section" id="requirementsSection">
+                        <div class="section-header">
+                            <i class="fas fa-list-ul"></i>
+                            <h3>Requirements</h3>
+                        </div>
+                        <div class="requirements-checklist" id="requirementsChecklist">
+                            No requirements specified
+                        </div>
+                    </div>
+                    
+                    <div class="text-section" id="notesSection">
+                        <div class="section-header">
+                            <i class="fas fa-sticky-note"></i>
+                            <h3>Notes</h3>
+                        </div>
+                        <div class="section-content" id="notesContent">
+                            No notes added
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="university-details-footer">
+                <button class="btn btn-primary edit-university-btn" id="editUniversityBtn">
+                    <i class="fas fa-edit"></i>
+                    Edit University
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="universityInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">University Information</h2>
+                <button class="close-btn" id="closeInfoModal">&times;</button>
+            </div>
+            <form id="universityInfoForm">
+                <div class="university-form-section">
+                    <h3 class="section-title">Basic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>University Name</label>
+                            <div class="form-display" id="infoUniversityName">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <div class="form-display" id="infoUniversityLocation">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Website</label>
+                            <div class="form-display" id="infoWebsite">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP Code</label>
+                            <div class="form-display" id="infoZipCode">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Institution Type</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ownership</label>
+                            <div class="form-display" id="infoOwnership">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Main Campus</label>
+                            <div class="form-display" id="infoMainCampus">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Religious Affiliation</label>
+                            <div class="form-display" id="infoReligiousAffiliation">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Minority Serving</label>
+                            <div class="form-display" id="infoMinorityServing">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Academic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Carnegie Classification</label>
+                            <div class="form-display" id="infoCarnegieBasic">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Degrees Awarded</label>
+                            <div class="form-display" id="infoDegreesAwarded">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Highest Degree</label>
+                            <div class="form-display" id="infoHighestDegree">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Undergraduate Program</label>
+                            <div class="form-display" id="infoUndergraduateProgram">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Admissions</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Admission Rate</label>
+                            <div class="form-display" id="infoAdmissionRate">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Average SAT Score</label>
+                            <div class="form-display" id="infoSatAverage">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SAT Reading 25th Percentile</label>
+                            <div class="form-display" id="infoSatReading25">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>SAT Reading 75th Percentile</label>
+                            <div class="form-display" id="infoSatReading75">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SAT Math 25th Percentile</label>
+                            <div class="form-display" id="infoSatMath25">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>SAT Math 75th Percentile</label>
+                            <div class="form-display" id="infoSatMath75">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ACT Cumulative 25th Percentile</label>
+                            <div class="form-display" id="infoActCumulative25">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>ACT Cumulative 75th Percentile</label>
+                            <div class="form-display" id="infoActCumulative75">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Financial Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>In-State Tuition</label>
+                            <div class="form-display" id="infoTuitionInState">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Out-of-State Tuition</label>
+                            <div class="form-display" id="infoTuitionOutState">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Average Net Price</label>
+                            <div class="form-display" id="infoAverageNetPrice">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Average Financial Aid</label>
+                            <div class="form-display" id="infoAverageFinancialAid">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Median Debt</label>
+                            <div class="form-display" id="infoMedianDebt">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Price Calculator</label>
+                            <div class="form-display" id="infoPriceCalculator">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Student Body</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Total Enrollment</label>
+                            <div class="form-display" id="infoTotalEnrollment">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Undergraduate Enrollment</label>
+                            <div class="form-display" id="infoUndergraduateEnrollment">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student Size Category</label>
+                            <div class="form-display" id="infoStudentSize">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Part-time Share</label>
+                            <div class="form-display" id="infoPartTimeShare">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Female Share</label>
+                            <div class="form-display" id="infoFemaleShare">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Age Entry</label>
+                            <div class="form-display" id="infoAgeEntry">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Demographics</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>White Students</label>
+                            <div class="form-display" id="infoWhiteShare">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Black Students</label>
+                            <div class="form-display" id="infoBlackShare">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hispanic Students</label>
+                            <div class="form-display" id="infoHispanicShare">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Asian Students</label>
+                            <div class="form-display" id="infoAsianShare">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Generation</label>
+                            <div class="form-display" id="infoFirstGeneration">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Pell Grant Recipients</label>
+                            <div class="form-display" id="infoPellGrant">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Outcomes & Completion</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Completion Rate Overall</label>
+                            <div class="form-display" id="infoCompletionRateOverall">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Completion Rate 4-Year</label>
+                            <div class="form-display" id="infoCompletionRate4Year">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Retention Rate</label>
+                            <div class="form-display" id="infoRetentionRate">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Transfer Rate</label>
+                            <div class="form-display" id="infoTransferRate">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Post-Graduation Outcomes</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Median Earnings (6 years)</label>
+                            <div class="form-display" id="infoMedianEarnings6">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Median Earnings (10 years)</label>
+                            <div class="form-display" id="infoMedianEarnings10">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employment Rate</label>
+                            <div class="form-display" id="infoEmploymentRate">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Repayment Rate</label>
+                            <div class="form-display" id="infoRepaymentRate">-</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Geographic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Coordinates</label>
+                            <div class="form-display" id="infoCoordinates">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Locale Classification</label>
+                            <div class="form-display" id="infoLocale">-</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Generated Contact Email</label>
+                            <div class="form-display" id="infoAdmissionsEmail">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="closeInfoModalBtn">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-primary" id="addFromInfoBtn">
+                        <i class="fas fa-plus"></i>
+                        Add This University
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/universities.js"></script>
+</body>
+</html>

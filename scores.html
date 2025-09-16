@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scores - Assia Hamouni</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/scores.css">
+    <link rel="stylesheet" href="styles/universities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="zhacademie-logo.png" alt="ZHAcademie" style="width: 180px; height: 180px; object-fit: contain;">
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="universities.html" class="nav-link">
+                    <i class="fas fa-university"></i>
+                    Universities
+                </a>
+                <a href="canvas.html" class="nav-link">
+                    <i class="fas fa-paint-brush"></i>
+                    Canvas
+                </a>
+                <a href="portfolio.html" class="nav-link">
+                    <i class="fas fa-folder"></i>
+                    Portfolio
+                </a>
+                <a href="scores.html" class="nav-link active">
+                    <i class="fas fa-chart-line"></i>
+                    Scores
+                </a>
+                <a href="tasks.html" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    Tasks
+                </a>
+                <a href="sat-practice.html" class="nav-link">
+                    <i class="fas fa-pencil-alt"></i>
+                    SAT Practice
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <button id="userMenuBtn" class="user-btn">
+                        <img id="userAvatar" src="" alt="User" class="user-avatar">
+                        <span id="userName">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="userDropdown" class="user-dropdown">
+                        <a href="profile.html" id="profileLink">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="theme-toggle-link" onclick="toggleTheme()">
+                            <i class="fas fa-moon"></i>
+                            Theme
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="header-content">
+                    <h1>Test Scores & Analytics</h1>
+                    <p>Track your academic test scores with detailed analytics and progress monitoring</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="addScoreBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Score
+                    </button>
+                </div>
+            </div>
+
+            <div class="scores-toolbar">
+                <div class="toolbar-left">
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" data-view="cards">
+                            <i class="fas fa-th-large"></i>
+                            Cards
+                        </button>
+                        <button class="toggle-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                            List
+                        </button>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="testTypeFilter" class="filter-select">
+                            <option value="all">All Tests</option>
+                            <option value="sat">SAT</option>
+                            <option value="duolingo">Duolingo</option>
+                            <option value="toefl">TOEFL</option>
+                            <option value="ielts">IELTS</option>
+                            <option value="gre">GRE</option>
+                            <option value="gmat">GMAT</option>
+                        </select>
+                        <select id="periodFilter" class="filter-select">
+                            <option value="all">All Time</option>
+                            <option value="6months">Last 6 Months</option>
+                            <option value="1year">Last Year</option>
+                            <option value="2years">Last 2 Years</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search scores...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalTests">0</div>
+                        <div class="stat-label">Total Tests</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="averageScore">0%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="bestScore">-</div>
+                        <div class="stat-label">Best Score</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="recentTest">-</div>
+                        <div class="stat-label">Most Recent</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="scores-section">
+                    <div class="section-header">
+                        <h2>Your Test Scores</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-sm btn-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="scores-content">
+                        <div class="scores-grid" id="scoresGrid">
+                            <div class="loading-state">
+                                <div class="loading-spinner-large"></div>
+                                <h3 class="loading-title">Loading your scores...</h3>
+                                <p class="loading-description">Please wait while we fetch your test results</p>
+                            </div>
+                        </div>
+
+                        <div class="scores-list hidden" id="scoresList">
+                            <div class="list-header">
+                                <div class="list-col">Test</div>
+                                <div class="list-col">Score</div>
+                                <div class="list-col">Date</div>
+                                <div class="list-col">Percentile</div>
+                                <div class="list-col">Actions</div>
+                            </div>
+                            <div class="list-body" id="scoresListBody"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-section">
+                    <div class="section-header">
+                        <h2>Analytics & Insights</h2>
+                        <div class="chart-controls">
+                            <select id="chartType" class="chart-select">
+                                <option value="line">Line Chart</option>
+                                <option value="bar">Bar Chart</option>
+                                <option value="radar">Radar Chart</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+                    
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-icon improvement">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h4>Score Improvement</h4>
+                                <p id="improvementText">Track your progress over time</p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon target">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h4>Goal Progress</h4>
+                                <p id="goalText">Set and track your target scores</p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon streak">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h4>Test Frequency</h4>
+                                <p id="frequencyText">Monitor your testing schedule</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="scoreModal" class="modal">
+        <div class="modal-content score-modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Test Score</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="scoreForm" class="score-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testType">Test Type</label>
+                        <select id="testType" class="form-control" required>
+                            <option value="">Select test type</option>
+                            <option value="sat">SAT</option>
+                            <option value="duolingo">Duolingo English Test</option>
+                            <option value="toefl">TOEFL iBT</option>
+                            <option value="ielts">IELTS</option>
+                            <option value="gre">GRE</option>
+                            <option value="gmat">GMAT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="scoreValue">Score</label>
+                        <input type="number" id="scoreValue" class="form-control" required min="0" step="1">
+                        <small class="form-help" id="scoreHelp">Enter your test score</small>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testDate">Test Date</label>
+                        <input type="date" id="testDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="percentile">Percentile (optional)</label>
+                        <input type="number" id="percentile" class="form-control" min="1" max="99" placeholder="e.g., 85">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="targetScore">Target Score (optional)</label>
+                        <input type="number" id="targetScore" class="form-control" placeholder="Your goal score" min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="retakeDate">Planned Retake (optional)</label>
+                        <input type="date" id="retakeDate" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="scoreNotes">Notes & Reflections</label>
+                    <textarea id="scoreNotes" class="form-control" rows="4" placeholder="How did you prepare? What worked well? Areas for improvement..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Score
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="scoreDetailModal" class="modal">
+        <div class="modal-content detail-modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="detailModalTitle">Score Details</h2>
+                <button class="close-btn" id="closeDetailModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="detail-content" id="detailContent">
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-secondary" id="editScoreBtn">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+                <button class="btn btn-danger" id="deleteScoreBtn">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="goalModal" class="modal">
+        <div class="modal-content goal-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Set Score Goals</h2>
+                <button class="close-btn" id="closeGoalModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="goalForm" class="goal-form">
+                <div class="goal-grid" id="goalGrid">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelGoalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-bullseye"></i>
+                        Save Goals
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content detail-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete Score</h2>
+                <button class="close-btn" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="detail-content">
+                <div class="delete-warning">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="score-summary" id="deleteSummary">
+                </div>
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Delete Score
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-chat-fab" id="aiChatFab">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="ai-chat-modal" id="aiChatModal">
+        <div class="ai-chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="chat-title">
+                    <h3>University Assistant</h3>
+                    <span class="chat-status">Ask me anything about universities</span>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="chat-resize-btn" id="chatResizeBtn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="chat-close-btn" id="chatCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="ai-chat-messages" id="chatMessages">
+        </div>
+        
+        <div class="ai-chat-input">
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-btn" data-question="How many colleges are in Orlando?">
+                    Colleges in Orlando
+                </button>
+                <button class="quick-btn" data-question="What are the best universities in Florida?">
+                    Florida Universities
+                </button>
+                <button class="quick-btn" data-question="Tell me about scholarship opportunities">
+                    Scholarships
+                </button>
+                <button class="quick-btn" data-question="What's the difference between public and private universities?">
+                    Public vs Private
+                </button>
+            </div>
+            <div class="input-container">
+                <input type="text" id="chatInput" placeholder="Ask about universities, admissions, scholarships..." />
+                <button id="sendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/scores.js"></script>
+</body>
+</html>

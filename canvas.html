@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas - Assia Hamouni</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/canvas.css">
+    <link rel="stylesheet" href="styles/universities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="zhacademie-logo.png" alt="ZHAcademie" style="width: 180px; height: 180px; object-fit: contain;">
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="universities.html" class="nav-link">
+                    <i class="fas fa-university"></i>
+                    Universities
+                </a>
+                <a href="canvas.html" class="nav-link active">
+                    <i class="fas fa-paint-brush"></i>
+                    Canvas
+                </a>
+                <a href="portfolio.html" class="nav-link">
+                    <i class="fas fa-folder"></i>
+                    Portfolio
+                </a>
+                <a href="scores.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Scores
+                </a>
+                <a href="tasks.html" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    Tasks
+                </a>
+                <a href="sat-practice.html" class="nav-link">
+                    <i class="fas fa-pencil-alt"></i>
+                    SAT Practice
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <button id="userMenuBtn" class="user-btn">
+                        <img id="userAvatar" src="" alt="User" class="user-avatar">
+                        <span id="userName">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="userDropdown" class="user-dropdown">
+                        <a href="profile.html" id="profileLink">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="theme-toggle-link" onclick="toggleTheme()">
+                            <i class="fas fa-moon"></i>
+                            Theme
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="canvas-container">
+        <div class="canvas-main">
+            <div class="canvas-toolbar">
+                <div class="toolbar-left">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="selectBtn" title="Select Tool">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </button>
+                        <button class="toolbar-btn" id="panBtn" title="Pan Tool">
+                            <i class="fas fa-hand-paper"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="undoBtn" title="Undo">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="toolbar-btn" id="redoBtn" title="Redo">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="toolbar-center">
+                    <h1 class="page-title" id="canvasPageTitle">Canvas</h1>
+                </div>
+
+                <div class="toolbar-right">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="saveCanvasBtn" title="Save Canvas">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="toolbar-btn" id="newCanvasBtn" title="New Canvas">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="toolbar-btn" id="canvasGalleryBtn" title="Canvas Gallery">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="toolbar-btn" id="trashBtn" title="Trash">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="deleteBtn" title="Delete Selected">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="zoomInBtn" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <div class="zoom-indicator" id="zoomIndicator" title="Current Zoom Level">
+                            <span>100%</span>
+                        </div>
+                        <button class="toolbar-btn" id="zoomOutBtn" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="toolbar-btn" id="resetZoomBtn" title="Reset Zoom">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                        <button class="toolbar-btn" id="fullscreenBtn" title="Toggle Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper" tabindex="0">
+                <canvas id="fabricCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="contextMenu" class="context-menu">
+        <button class="context-menu-item" id="deleteCanvasBtn">
+            <i class="fas fa-trash"></i>
+            Move to Trash
+        </button>
+    </div>
+
+    <div id="textToolbar" class="text-toolbar">
+        <div class="toolbar-section">
+            <select id="fontFamilySelect" class="text-select font-family-select">
+                <option value="Arial">Arial</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Impact">Impact</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Trebuchet MS">Trebuchet MS</option>
+                <option value="Palatino">Palatino</option>
+            </select>
+            <select id="fontSizeSelect" class="text-select font-size-select">
+                <option value="8">8</option>
+                <option value="10">10</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20" selected>20</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+                <option value="36">36</option>
+                <option value="48">48</option>
+                <option value="64">64</option>
+                <option value="72">72</option>
+            </select>
+        </div>
+        
+        <div class="toolbar-divider"></div>
+        
+        <div class="toolbar-section">
+            <button class="text-btn" id="boldBtn" title="Bold (Ctrl+B)">
+                <i class="fas fa-bold"></i>
+            </button>
+            <button class="text-btn" id="italicBtn" title="Italic (Ctrl+I)">
+                <i class="fas fa-italic"></i>
+            </button>
+            <button class="text-btn" id="underlineBtn" title="Underline (Ctrl+U)">
+                <i class="fas fa-underline"></i>
+            </button>
+            <button class="text-btn" id="strikethroughBtn" title="Strikethrough">
+                <i class="fas fa-strikethrough"></i>
+            </button>
+        </div>
+        
+        <div class="toolbar-divider"></div>
+        
+        <div class="toolbar-section">
+            <div class="color-picker-wrapper">
+                <input type="color" id="textColorPicker" class="text-color-picker" value="#000000" title="Text Color">
+                <span class="color-label">A</span>
+            </div>
+            <div class="color-picker-wrapper">
+                <input type="color" id="textBackgroundPicker" class="text-color-picker" value="#ffffff" title="Highlight Color">
+                <span class="color-label highlight-label">A</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="shapeToolbar" class="shape-toolbar">
+        <div class="toolbar-section">
+            <div class="color-picker-wrapper" title="Fill Color">
+                <input type="color" id="shapeColorPicker" class="shape-color-picker" value="#000000">
+                <div class="color-display"></div>
+                <span class="color-label"><i class="fas fa-fill-drip"></i></span>
+            </div>
+            
+            <div class="color-picker-wrapper" title="Stroke Color">
+                <input type="color" id="strokeColorPicker" class="shape-color-picker" value="#1e40af">
+                <div class="color-display"></div>
+                <span class="color-label"><i class="fas fa-pen"></i></span>
+            </div>
+        </div>
+        
+        <div class="toolbar-divider"></div>
+        
+        <div class="toolbar-section">
+            <div class="stroke-width-control">
+                <span class="stroke-width-label"><i class="fas fa-weight-hanging"></i></span>
+                <input type="range" id="strokeWidthSlider" class="stroke-width-slider" min="1" max="20" value="5" title="Stroke Width">
+                <span id="strokeWidthValue" class="stroke-width-value">5px</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="trashModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Trash</h2>
+                <button class="close-btn" id="closeTrashModal">&times;</button>
+            </div>
+            <div class="trash-content">
+                <div class="trash-list" id="trashList">
+                </div>
+                <div class="trash-actions">
+                    <button class="btn btn-secondary" id="emptyTrashBtn">
+                        <i class="fas fa-trash-alt"></i>
+                        Empty Trash
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="saveCanvasModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Save Canvas</h2>
+                <button class="close-btn" id="closeSaveModal">&times;</button>
+            </div>
+            <form id="saveCanvasForm">
+                <div class="form-group">
+                    <label for="canvasName">Canvas Name</label>
+                    <input type="text" id="canvasName" name="name" class="form-control" required placeholder="Enter canvas name...">
+                </div>
+                <div class="form-group">
+                    <label for="canvasDescription">Description (optional)</label>
+                    <textarea id="canvasDescription" name="description" class="form-control" rows="3" placeholder="Brief description of this canvas..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelSaveBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Canvas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="canvasGalleryModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">My Canvas Gallery</h2>
+                <button class="close-btn" id="closeGalleryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="gallery-toolbar">
+                    <div class="gallery-search">
+                        <input type="text" id="gallerySearch" placeholder="Search canvases..." class="search-input">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <div class="gallery-actions">
+                        <button class="btn btn-primary" id="newCanvasFromGallery">
+                            <i class="fas fa-plus"></i>
+                            New Canvas
+                        </button>
+                    </div>
+                </div>
+                <div class="gallery-grid" id="canvasGalleryGrid">
+                </div>
+                <div class="gallery-empty" id="galleryEmpty" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-canvas"></i>
+                        <h3>No Canvases Yet</h3>
+                        <p>Create your first canvas to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="canvasContextMenu">
+        <div class="context-menu-item context-menu-parent" id="addTextMenu">
+            <i class="fas fa-font"></i>
+            <span>Add Text</span>
+            <i class="fas fa-chevron-right context-menu-arrow"></i>
+            <div class="context-submenu">
+                <div class="context-menu-item text-type-item" data-type="text">
+                    <i class="fas fa-font"></i>
+                    <span>Text</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="heading1">
+                    <i class="fas fa-heading"></i>
+                    <span>Heading 1</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="heading2">
+                    <i class="fas fa-heading"></i>
+                    <span>Heading 2</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="heading3">
+                    <i class="fas fa-heading"></i>
+                    <span>Heading 3</span>
+                </div>
+                <div class="context-menu-divider"></div>
+                <div class="context-menu-item text-type-item" data-type="bulletlist">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Bulleted list</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="numberlist">
+                    <i class="fas fa-list-ol"></i>
+                    <span>Numbered list</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="todolist">
+                    <i class="fas fa-check-square"></i>
+                    <span>To-do list</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="togglelist">
+                    <i class="fas fa-caret-right"></i>
+                    <span>Toggle list</span>
+                </div>
+                <div class="context-menu-divider"></div>
+                <div class="context-menu-item text-type-item" data-type="code">
+                    <i class="fas fa-code"></i>
+                    <span>Code</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="quote">
+                    <i class="fas fa-quote-left"></i>
+                    <span>Quote</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="callout">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Callout</span>
+                </div>
+                <div class="context-menu-item text-type-item" data-type="equation">
+                    <i class="fas fa-square-root-alt"></i>
+                    <span>Block equation</span>
+                </div>
+            </div>
+        </div>
+        <div class="context-menu-item context-menu-parent" id="shapesMenu">
+            <i class="fas fa-shapes"></i>
+            <span>Shapes</span>
+            <i class="fas fa-chevron-right context-menu-arrow"></i>
+            <div class="context-submenu">
+                <div class="context-menu-item" id="addRectangleMenu">
+                    <i class="fas fa-square"></i>
+                    <span>Rectangle</span>
+                </div>
+                <div class="context-menu-item" id="addCircleMenu">
+                    <i class="fas fa-circle"></i>
+                    <span>Circle</span>
+                </div>
+                <div class="context-menu-item" id="addTriangleMenu">
+                    <i class="fas fa-play"></i>
+                    <span>Triangle</span>
+                </div>
+                <div class="context-menu-item" id="addLineMenu">
+                    <i class="fas fa-minus"></i>
+                    <span>Line</span>
+                </div>
+                <div class="context-menu-item" id="addArrowMenu">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Arrow</span>
+                </div>
+                <div class="context-menu-item" id="addPolygonMenu">
+                    <i class="fas fa-draw-polygon"></i>
+                    <span>Polygon</span>
+                </div>
+                <div class="context-menu-item" id="addStarMenu">
+                    <i class="fas fa-star"></i>
+                    <span>Star</span>
+                </div>
+                <div class="context-menu-item" id="addHeartMenu">
+                    <i class="fas fa-heart"></i>
+                    <span>Heart</span>
+                </div>
+            </div>
+        </div>
+        <div class="context-menu-item context-menu-parent" id="emojisMenu">
+            <i class="fas fa-smile"></i>
+            <span>Emojis</span>
+            <i class="fas fa-chevron-right context-menu-arrow"></i>
+            <div class="context-submenu emoji-grid">
+                <div class="emoji-item" data-emoji="😀">😀</div>
+                <div class="emoji-item" data-emoji="😃">😃</div>
+                <div class="emoji-item" data-emoji="😄">😄</div>
+                <div class="emoji-item" data-emoji="😁">😁</div>
+                <div class="emoji-item" data-emoji="😅">😅</div>
+                <div class="emoji-item" data-emoji="😂">😂</div>
+                <div class="emoji-item" data-emoji="🤣">🤣</div>
+                <div class="emoji-item" data-emoji="😊">😊</div>
+                <div class="emoji-item" data-emoji="😇">😇</div>
+                <div class="emoji-item" data-emoji="🙂">🙂</div>
+                <div class="emoji-item" data-emoji="🙃">🙃</div>
+                <div class="emoji-item" data-emoji="😉">😉</div>
+                <div class="emoji-item" data-emoji="😌">😌</div>
+                <div class="emoji-item" data-emoji="😍">😍</div>
+                <div class="emoji-item" data-emoji="🥰">🥰</div>
+                <div class="emoji-item" data-emoji="😘">😘</div>
+                <div class="emoji-item" data-emoji="😗">😗</div>
+                <div class="emoji-item" data-emoji="😙">😙</div>
+                <div class="emoji-item" data-emoji="😚">😚</div>
+                <div class="emoji-item" data-emoji="😋">😋</div>
+                <div class="emoji-item" data-emoji="😛">😛</div>
+                <div class="emoji-item" data-emoji="😝">😝</div>
+                <div class="emoji-item" data-emoji="😜">😜</div>
+                <div class="emoji-item" data-emoji="🤪">🤪</div>
+                <div class="emoji-item" data-emoji="🤨">🤨</div>
+                <div class="emoji-item" data-emoji="🧐">🧐</div>
+                <div class="emoji-item" data-emoji="🤓">🤓</div>
+                <div class="emoji-item" data-emoji="😎">😎</div>
+                <div class="emoji-item" data-emoji="🤩">🤩</div>
+                <div class="emoji-item" data-emoji="🥳">🥳</div>
+                <div class="emoji-item" data-emoji="😏">😏</div>
+                <div class="emoji-item" data-emoji="😒">😒</div>
+                <div class="emoji-item" data-emoji="😞">😞</div>
+                <div class="emoji-item" data-emoji="😔">😔</div>
+                <div class="emoji-item" data-emoji="😟">😟</div>
+                <div class="emoji-item" data-emoji="😕">😕</div>
+                <div class="emoji-item" data-emoji="🙁">🙁</div>
+                <div class="emoji-item" data-emoji="☹️">☹️</div>
+                <div class="emoji-item" data-emoji="😣">😣</div>
+                <div class="emoji-item" data-emoji="😖">😖</div>
+                <div class="emoji-item" data-emoji="😫">😫</div>
+                <div class="emoji-item" data-emoji="😩">😩</div>
+                <div class="emoji-item" data-emoji="🥺">🥺</div>
+                <div class="emoji-item" data-emoji="😢">😢</div>
+                <div class="emoji-item" data-emoji="😭">😭</div>
+                <div class="emoji-item" data-emoji="😤">😤</div>
+                <div class="emoji-item" data-emoji="😠">😠</div>
+                <div class="emoji-item" data-emoji="😡">😡</div>
+                <div class="emoji-item" data-emoji="🤬">🤬</div>
+                <div class="emoji-item" data-emoji="🤯">🤯</div>
+                <div class="emoji-item" data-emoji="😳">😳</div>
+                <div class="emoji-item" data-emoji="🥵">🥵</div>
+                <div class="emoji-item" data-emoji="🥶">🥶</div>
+                <div class="emoji-item" data-emoji="😱">😱</div>
+                <div class="emoji-item" data-emoji="😨">😨</div>
+                <div class="emoji-item" data-emoji="😰">😰</div>
+                <div class="emoji-item" data-emoji="😥">😥</div>
+                <div class="emoji-item" data-emoji="😓">😓</div>
+                <div class="emoji-item" data-emoji="🤗">🤗</div>
+                <div class="emoji-item" data-emoji="🤔">🤔</div>
+                <div class="emoji-item" data-emoji="🤭">🤭</div>
+                <div class="emoji-item" data-emoji="🤫">🤫</div>
+                <div class="emoji-item" data-emoji="🤥">🤥</div>
+                <div class="emoji-item" data-emoji="😶">😶</div>
+                <div class="emoji-item" data-emoji="😐">😐</div>
+                <div class="emoji-item" data-emoji="😑">😑</div>
+                <div class="emoji-item" data-emoji="😬">😬</div>
+                <div class="emoji-item" data-emoji="🙄">🙄</div>
+                <div class="emoji-item" data-emoji="😯">😯</div>
+                <div class="emoji-item" data-emoji="😦">😦</div>
+                <div class="emoji-item" data-emoji="😧">😧</div>
+                <div class="emoji-item" data-emoji="😮">😮</div>
+                <div class="emoji-item" data-emoji="😲">😲</div>
+                <div class="emoji-item" data-emoji="🥱">🥱</div>
+                <div class="emoji-item" data-emoji="😴">😴</div>
+                <div class="emoji-item" data-emoji="🤤">🤤</div>
+                <div class="emoji-item" data-emoji="😪">😪</div>
+                <div class="emoji-item" data-emoji="😵">😵</div>
+                <div class="emoji-item" data-emoji="🤐">🤐</div>
+                <div class="emoji-item" data-emoji="🥴">🥴</div>
+                <div class="emoji-item" data-emoji="🤢">🤢</div>
+                <div class="emoji-item" data-emoji="🤮">🤮</div>
+                <div class="emoji-item" data-emoji="🤧">🤧</div>
+                <div class="emoji-item" data-emoji="😷">😷</div>
+                <div class="emoji-item" data-emoji="🤒">🤒</div>
+                <div class="emoji-item" data-emoji="🤕">🤕</div>
+                <div class="emoji-item" data-emoji="🤑">🤑</div>
+                <div class="emoji-item" data-emoji="🤠">🤠</div>
+                <div class="emoji-item" data-emoji="😈">😈</div>
+                <div class="emoji-item" data-emoji="👿">👿</div>
+                <div class="emoji-item" data-emoji="👹">👹</div>
+                <div class="emoji-item" data-emoji="👺">👺</div>
+                <div class="emoji-item" data-emoji="🤡">🤡</div>
+                <div class="emoji-item" data-emoji="💩">💩</div>
+                <div class="emoji-item" data-emoji="👻">👻</div>
+                <div class="emoji-item" data-emoji="💀">💀</div>
+                <div class="emoji-item" data-emoji="☠️">☠️</div>
+                <div class="emoji-item" data-emoji="👽">👽</div>
+                <div class="emoji-item" data-emoji="👾">👾</div>
+                <div class="emoji-item" data-emoji="🤖">🤖</div>
+                <div class="emoji-item" data-emoji="🎃">🎃</div>
+                <div class="emoji-item" data-emoji="😺">😺</div>
+                <div class="emoji-item" data-emoji="😸">😸</div>
+                <div class="emoji-item" data-emoji="😹">😹</div>
+                <div class="emoji-item" data-emoji="😻">😻</div>
+                <div class="emoji-item" data-emoji="😼">😼</div>
+                <div class="emoji-item" data-emoji="😽">😽</div>
+                <div class="emoji-item" data-emoji="🙀">🙀</div>
+                <div class="emoji-item" data-emoji="😿">😿</div>
+                <div class="emoji-item" data-emoji="😾">😾</div>
+                <div class="emoji-item" data-emoji="👐">👐</div>
+                <div class="emoji-item" data-emoji="🙌">🙌</div>
+                <div class="emoji-item" data-emoji="👏">👏</div>
+                <div class="emoji-item" data-emoji="🤝">🤝</div>
+                <div class="emoji-item" data-emoji="👍">👍</div>
+                <div class="emoji-item" data-emoji="👎">👎</div>
+                <div class="emoji-item" data-emoji="👊">👊</div>
+                <div class="emoji-item" data-emoji="✊">✊</div>
+                <div class="emoji-item" data-emoji="🤛">🤛</div>
+                <div class="emoji-item" data-emoji="🤜">🤜</div>
+                <div class="emoji-item" data-emoji="🤞">🤞</div>
+                <div class="emoji-item" data-emoji="✌️">✌️</div>
+                <div class="emoji-item" data-emoji="🤟">🤟</div>
+                <div class="emoji-item" data-emoji="🤘">🤘</div>
+                <div class="emoji-item" data-emoji="👌">👌</div>
+                <div class="emoji-item" data-emoji="🤏">🤏</div>
+                <div class="emoji-item" data-emoji="👈">👈</div>
+                <div class="emoji-item" data-emoji="👉">👉</div>
+                <div class="emoji-item" data-emoji="👆">👆</div>
+                <div class="emoji-item" data-emoji="👇">👇</div>
+                <div class="emoji-item" data-emoji="☝️">☝️</div>
+                <div class="emoji-item" data-emoji="✋">✋</div>
+                <div class="emoji-item" data-emoji="🤚">🤚</div>
+                <div class="emoji-item" data-emoji="🖐️">🖐️</div>
+                <div class="emoji-item" data-emoji="🖖">🖖</div>
+                <div class="emoji-item" data-emoji="👋">👋</div>
+                <div class="emoji-item" data-emoji="🤙">🤙</div>
+                <div class="emoji-item" data-emoji="❤️">❤️</div>
+                <div class="emoji-item" data-emoji="🧡">🧡</div>
+                <div class="emoji-item" data-emoji="💛">💛</div>
+                <div class="emoji-item" data-emoji="💚">💚</div>
+                <div class="emoji-item" data-emoji="💙">💙</div>
+                <div class="emoji-item" data-emoji="💜">💜</div>
+                <div class="emoji-item" data-emoji="🖤">🖤</div>
+                <div class="emoji-item" data-emoji="🤍">🤍</div>
+                <div class="emoji-item" data-emoji="🤎">🤎</div>
+                <div class="emoji-item" data-emoji="💔">💔</div>
+                <div class="emoji-item" data-emoji="❣️">❣️</div>
+                <div class="emoji-item" data-emoji="💕">💕</div>
+                <div class="emoji-item" data-emoji="💞">💞</div>
+                <div class="emoji-item" data-emoji="💓">💓</div>
+                <div class="emoji-item" data-emoji="💗">💗</div>
+                <div class="emoji-item" data-emoji="💖">💖</div>
+                <div class="emoji-item" data-emoji="💘">💘</div>
+                <div class="emoji-item" data-emoji="💝">💝</div>
+                <div class="emoji-item" data-emoji="💟">💟</div>
+            </div>
+        </div>
+        <div class="context-menu-item" id="addImageMenu">
+            <i class="fas fa-image"></i>
+            <span>Add Image</span>
+        </div>
+        <div class="context-menu-item" id="freeDrawMenu">
+            <i class="fas fa-pencil-alt"></i>
+            <span>Free Draw</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" id="clearCanvasMenu">
+            <i class="fas fa-trash-alt"></i>
+            <span>Clear Canvas</span>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Delete</h2>
+                <button class="close-btn" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to permanently delete this canvas? This action cannot be undone.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clearCanvasModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Clear Canvas</h2>
+                <button class="close-btn" id="closeClearModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to clear the canvas? All content will be permanently removed and this action cannot be undone.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelClearBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmClearBtn">Clear Canvas</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newCanvasModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">New Canvas</h2>
+                <button class="close-btn" id="closeNewModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to create a new canvas? Any unsaved changes to the current canvas will be lost.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelNewBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmNewBtn">Create New Canvas</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+
+    <div class="ai-chat-fab" id="aiChatFab">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="ai-chat-modal" id="aiChatModal">
+        <div class="ai-chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="chat-title">
+                    <h3>University Assistant</h3>
+                    <span class="chat-status">Ask me anything about universities</span>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="chat-resize-btn" id="chatResizeBtn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="chat-close-btn" id="chatCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="ai-chat-messages" id="chatMessages">
+        </div>
+        
+        <div class="ai-chat-input">
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-btn" data-question="How many colleges are in Orlando?">
+                    Colleges in Orlando
+                </button>
+                <button class="quick-btn" data-question="What are the best universities in Florida?">
+                    Florida Universities
+                </button>
+                <button class="quick-btn" data-question="Tell me about scholarship opportunities">
+                    Scholarships
+                </button>
+                <button class="quick-btn" data-question="What's the difference between public and private universities?">
+                    Public vs Private
+                </button>
+            </div>
+            <div class="input-container">
+                <input type="text" id="chatInput" placeholder="Ask about universities, admissions, scholarships..." />
+                <button id="sendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/canvas.js"></script>
+</body>
+</html>
