@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>UniTrack - Assia Hamouni</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-background">
+            <div class="floating-elements">
+                <div class="floating-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="floating-icon"><i class="fas fa-university"></i></div>
+                <div class="floating-icon"><i class="fas fa-book"></i></div>
+                <div class="floating-icon"><i class="fas fa-trophy"></i></div>
+                <div class="floating-icon"><i class="fas fa-star"></i></div>
+                <div class="floating-icon"><i class="fas fa-medal"></i></div>
+                <div class="floating-icon"><i class="fas fa-certificate"></i></div>
+                <div class="floating-icon"><i class="fas fa-atom"></i></div>
+                <div class="floating-icon"><i class="fas fa-lightbulb"></i></div>
+                <div class="floating-icon"><i class="fas fa-globe"></i></div>
+                <div class="floating-icon"><i class="fas fa-rocket"></i></div>
+                <div class="floating-icon"><i class="fas fa-brain"></i></div>
+                <div class="floating-icon"><i class="fas fa-microscope"></i></div>
+                <div class="floating-icon"><i class="fas fa-flask"></i></div>
+                <div class="floating-icon"><i class="fas fa-laptop-code"></i></div>
+                <div class="floating-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="floating-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="floating-icon"><i class="fas fa-dna"></i></div>
+                <div class="floating-icon"><i class="fas fa-heartbeat"></i></div>
+                <div class="floating-icon"><i class="fas fa-calculator"></i></div>
+            </div>
+        </div>
+        
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="brand-section">
+                        <div class="brand-identity">
+                            <div class="logo-symbol">
+                                <img src="zhacademie-logo.png" alt="ZHAcademie" style="width: 180px; height: 180px; object-fit: contain;">
+                            </div>
+                        </div>
+                        <div class="tagline">
+                            <p>Your personal university application companion</p>
+                        </div>
+                    </div>
+                    
+                    <div class="greeting-section">
+                        <h2>Ready to continue your journey?</h2>
+                        <p>Keep track of applications, deadlines, and make your university dreams come true</p>
+                    </div>
+                </div>
+
+                <div class="auth-content">
+                    <div class="form-switcher">
+                        <button class="switch-btn active" data-form="login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Sign In
+                        </button>
+                        <button class="switch-btn" data-form="signup">
+                            <i class="fas fa-user-plus"></i>
+                            Sign Up
+                        </button>
+                    </div>
+
+                    <div class="forms-container">
+                        <form id="loginForm" class="auth-form active">
+                            <div class="form-section">
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-envelope"></i>
+                                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                                        <label for="loginEmail">Email Address</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                                        <label for="loginPassword">Password</label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="submit-btn">
+                                    <span>Sign In to UniTrack</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <form id="signupForm" class="auth-form">
+                            <div class="form-section">
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-user"></i>
+                                        <input type="text" id="signupName" placeholder="Enter your full name" required>
+                                        <label for="signupName">Full Name</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-envelope"></i>
+                                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                                        <label for="signupEmail">Email Address</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="signupPassword" placeholder="Create a password" required>
+                                        <label for="signupPassword">Password</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-check-circle"></i>
+                                        <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                                        <label for="confirmPassword">Confirm Password</label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="submit-btn">
+                                    <span>Create Your Account</span>
+                                    <i class="fas fa-rocket"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="auth-footer">
+                        <div class="features-preview">
+                            <div class="feature-item">
+                                <i class="fas fa-university"></i>
+                                <span>Track Universities</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Monitor Progress</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-tasks"></i>
+                                <span>Manage Tasks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingModal" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Connecting to UniTrack...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
