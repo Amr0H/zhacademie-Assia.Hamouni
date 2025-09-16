@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
+    if (typeof firebase === 'undefined') {
+        showError('Application failed to load. Please refresh the page and try again.');
+        return;
+    }
+    
+    if (!auth || !db) {
+        setTimeout(() => {
+            if (!auth || !db) {
+                showError('Application services not ready. Please refresh the page and try again.');
+            }
+        }, 3000);
+        return;
+    }
+    
     const switchButtons = document.querySelectorAll('.switch-btn');
     const authForms = document.querySelectorAll('.auth-form');
     const loginForm = document.getElementById('loginForm');
@@ -40,7 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
         
         try {
-            const requestQuery = await db.collection('userRequests').where('email', '==', email).get();
+            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            
+            const requestQuery = await withTimeout(db.collection('userRequests').where('email', '==', email).get());
             
             if (!requestQuery.empty) {
                 const requestDoc = requestQuery.docs[0];
@@ -59,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const userCredential = await withTimeout(auth.signInWithEmailAndPassword(email, password));
             const user = userCredential.user;
             
             showSuccess('Welcome back to UniTrack!');
@@ -74,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (error.code === 'auth/user-not-found') {
                 try {
-                    const requestQuery = await db.collection('userRequests').where('email', '==', email).get();
+                    const requestQuery = await withTimeout(db.collection('userRequests').where('email', '==', email).get());
                     if (!requestQuery.empty) {
                         const requestData = requestQuery.docs[0].data();
                         if (requestData.status === 'pending') {
@@ -101,6 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError('Authentication service is unavailable. Please try again later.');
             } else if (error.code === 'auth/invalid-api-key') {
                 showError('Authentication configuration error. Please contact support.');
+            } else if (error.message === 'Operation timed out') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else if (error.code === 'auth/web-storage-unsupported' || error.code === 'auth/quota-exceeded') {
+                showError('Browser storage is full or disabled. Please clear your browser cache and try again.');
+            } else if (error.code === 'auth/timeout') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else if (error.code === 'auth/cors-unsupported') {
+                showError('Browser security settings are blocking the request. Please try a different browser.');
             } else {
                 const errorMessage = getErrorMessage(error.code);
                 showError(errorMessage);
@@ -163,13 +187,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
         
         try {
-            await db.collection('userRequests').add({
+            await withTimeout(db.collection('userRequests').add({
                 name: name,
                 email: email,
                 password: password,
                 status: 'pending',
                 requestedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            }));
             
             hideLoading();
             showSuccess('Account request submitted! Please wait for admin approval.');
@@ -180,7 +204,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         } catch (error) {
             hideLoading();
-            showError('Error submitting request. Please try again.');
+            if (error.message === 'Operation timed out') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else {
+                showError('Error submitting request. Please try again.');
+            }
         }
     });
 
@@ -282,6 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
             'auth/account-exists-with-different-credential': 'An account already exists with this email but different sign-in method.',
             'auth/missing-email': 'Please enter your email address.',
             'auth/missing-password': 'Please enter your password.',
+            'auth/web-storage-unsupported': 'Your browser does not support local storage. Please enable cookies and try again.',
+            'auth/cors-unsupported': 'Your browser security settings are blocking the request. Please try a different browser or disable ad blockers.',
+            'auth/invalid-cordova-configuration': 'Invalid mobile app configuration. Please contact support.',
+            'auth/app-deleted': 'The authentication service is temporarily unavailable. Please try again later.',
             'permission-denied': 'You do not have permission to perform this action.',
             'unavailable': 'The service is temporarily unavailable. Please try again later.',
             'unauthenticated': 'Please sign in to access this feature.',
@@ -293,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (!errorCode) {
-            return 'An unexpected error occurred. Please try again.';
+            return 'An unexpected error occurred. Please refresh the page and try again.';
         }
         
         return `Error (${errorCode}): An unexpected error occurred. Please try again or contact support if the problem persists.`;
@@ -308,6 +340,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const hasLetter = /[a-zA-Z]/.test(password);
         const hasNumber = /\d/.test(password);
         return hasLetter && hasNumber;
+    }
+
+    function withTimeout(promise, timeoutMs = 15000) {
+        return Promise.race([
+            promise,
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
+            )
+        ]);
     }
 
     function validateForm(formData) {
