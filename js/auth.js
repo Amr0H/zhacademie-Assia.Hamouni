@@ -1,14 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const switchButtons = document.querySelectorAll('.switch-btn');
-    const authForms = document.querySelectorAll('.auth-form');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const loadingModal = document.getElementById('loadingModal');
+    // Wait for Firebase to be fully initialized before proceeding
+    function initializeAuth() {
+        const switchButtons = document.querySelectorAll('.switch-btn');
+        const authForms = document.querySelectorAll('.auth-form');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loadingModal = document.getElementById('loadingModal');
 
-    // Mobile-specific initialization
-    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    let retryCount = 0;
-    const maxRetries = 3;
+        // Mobile-specific initialization
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        let retryCount = 0;
+        const maxRetries = 3;
+
+        // Enhanced mobile debugging
+        if (isMobile) {
+            console.log('Mobile device detected:', navigator.userAgent);
+            console.log('Firebase available:', typeof firebase !== 'undefined');
+            console.log('Auth available:', typeof auth !== 'undefined');
+            console.log('DB available:', typeof db !== 'undefined');
+            
+            // Add global error handler for mobile
+            window.addEventListener('error', function(e) {
+                console.error('Global error on mobile:', e.error, e.message, e.filename, e.lineno);
+            });
+            
+            window.addEventListener('unhandledrejection', function(e) {
+                console.error('Unhandled promise rejection on mobile:', e.reason);
+            });
+        }
 
     // Enhanced mobile compatibility check
     function checkMobileCompatibility() {
@@ -114,6 +133,18 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
         
         try {
+            // Wait for Firebase to be fully initialized
+            if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined') {
+                throw new Error('Firebase services not properly initialized. Please refresh the page.');
+            }
+            
+            // Additional mobile safety check
+            if (isMobile) {
+                console.log('Starting mobile login process...');
+                // Wait a bit for mobile browsers to fully load Firebase
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
             // Set Firebase auth persistence for mobile compatibility
             await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
             
@@ -148,14 +179,29 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Login error:', error);
             console.error('Error code:', error.code);
             console.error('Error message:', error.message);
+            console.error('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            
+            // Mobile-specific detailed error logging
+            if (isMobile) {
+                console.error('Mobile login error details:', {
+                    errorCode: error.code,
+                    errorMessage: error.message,
+                    retryAttempt: retryAttempt,
+                    userAgent: navigator.userAgent,
+                    online: navigator.onLine,
+                    timestamp: new Date().toISOString()
+                });
+            }
             
             // Check if this is a network-related error and we can retry
             const isNetworkError = error.code === 'auth/network-request-failed' || 
                                    error.code === 'auth/timeout' || 
                                    error.code === 'auth/deadline-exceeded' ||
+                                   error.code === 'auth/internal-error' ||
                                    (error.message && (error.message.includes('Failed to fetch') || 
                                                      error.message.includes('Load failed') ||
-                                                     error.message.includes('NetworkError')));
+                                                     error.message.includes('NetworkError') ||
+                                                     error.message.includes('fetch')));
             
             if (isNetworkError && retryAttempt < maxRetries && isMobile) {
                 console.log(`Network error detected, retrying... (attempt ${retryAttempt + 1}/${maxRetries})`);
@@ -166,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Enhanced mobile-specific error handling
+            // Enhanced mobile-specific error handling with more details
             if (error.code === 'auth/user-not-found') {
                 try {
                     const requestQuery = await db.collection('userRequests').where('email', '==', email).get();
@@ -186,6 +232,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Database error:', dbError);
                     showError('No account found with this email. Please sign up first.');
                 }
+            } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
+                showError('Incorrect password. Please check your password and try again.');
+            } else if (error.code === 'auth/invalid-email') {
+                showError('Please enter a valid email address.');
             } else if (error.code === 'auth/network-request-failed') {
                 showError('Network connection error. Please check your internet connection and try again.');
             } else if (error.code === 'auth/too-many-requests') {
@@ -198,12 +248,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError('Your browser storage is disabled. Please enable cookies and local storage.');
             } else if (error.code === 'auth/unauthorized-domain') {
                 showError('Authentication not available on this domain. Please contact support.');
+            } else if (error.code === 'auth/internal-error') {
+                showError('Internal service error. Please try again in a moment.');
             } else if (error.message && error.message.includes('Failed to fetch')) {
                 showError('Connection failed. Please check your internet connection and try again.');
             } else if (error.message && error.message.includes('Load failed')) {
                 showError('Failed to load authentication service. Please refresh the page and try again.');
             } else {
-                const errorMessage = getErrorMessage(error.code);
+                // For mobile debugging, show more specific error information
+                const errorMessage = isMobile ? 
+                    `Login failed: ${error.code || 'unknown'} - ${error.message || 'No details available'}. Please screenshot this and contact support.` :
+                    getErrorMessage(error.code);
                 showError(errorMessage);
             }
         }
@@ -512,4 +567,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
+    } // End of initializeAuth function
+
+    // Check if Firebase is ready, if not wait for it
+    if (window.firebaseReady && typeof auth !== 'undefined' && typeof db !== 'undefined') {
+        initializeAuth();
+    } else {
+        console.log('Waiting for Firebase to initialize...');
+        window.addEventListener('firebaseInitialized', function() {
+            console.log('Firebase initialized, starting auth...');
+            initializeAuth();
+        });
+        
+        // Fallback: if the event doesn't fire, try again after a delay
+        setTimeout(function() {
+            if (typeof auth !== 'undefined' && typeof db !== 'undefined') {
+                console.log('Firebase ready via fallback, starting auth...');
+                initializeAuth();
+            } else {
+                console.error('Firebase failed to initialize properly');
+                alert('Failed to load authentication service. Please refresh the page.');
+            }
+        }, 3000);
+    }
 });
