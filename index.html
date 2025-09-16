@@ -174,44 +174,10 @@
         </div>
     </div>
 
-    <!-- Firebase Initialization Loading -->
-    <div id="firebaseLoadingModal" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner">
-                <div class="spinner-ring"></div>
-                <div class="spinner-ring"></div>
-                <div class="spinner-ring"></div>
-            </div>
-            <p>Initializing authentication...</p>
-        </div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
-    
-    <!-- Show loading for Firebase initialization -->
-    <script>
-        // Show Firebase loading on mobile devices
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            document.addEventListener('DOMContentLoaded', function() {
-                const firebaseLoader = document.getElementById('firebaseLoadingModal');
-                if (firebaseLoader) {
-                    firebaseLoader.classList.add('show');
-                }
-            });
-            
-            // Hide loading when Firebase is ready
-            window.addEventListener('firebaseInitialized', function() {
-                const firebaseLoader = document.getElementById('firebaseLoadingModal');
-                if (firebaseLoader) {
-                    firebaseLoader.classList.remove('show');
-                }
-            });
-        }
-    </script>
-    
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
 </body>
