@@ -1,33 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for Firebase to be fully initialized before proceeding
-    function initializeAuth() {
-        const switchButtons = document.querySelectorAll('.switch-btn');
-        const authForms = document.querySelectorAll('.auth-form');
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const loadingModal = document.getElementById('loadingModal');
+    // Simple initialization - Firebase should be ready by now
+    const switchButtons = document.querySelectorAll('.switch-btn');
+    const authForms = document.querySelectorAll('.auth-form');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const loadingModal = document.getElementById('loadingModal');
 
-        // Mobile-specific initialization
-        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        let retryCount = 0;
-        const maxRetries = 3;
+    // Hide Firebase loading modal immediately
+    const firebaseLoader = document.getElementById('firebaseLoadingModal');
+    if (firebaseLoader) {
+        firebaseLoader.classList.remove('show');
+    }
 
-        // Enhanced mobile debugging
-        if (isMobile) {
-            console.log('Mobile device detected:', navigator.userAgent);
-            console.log('Firebase available:', typeof firebase !== 'undefined');
-            console.log('Auth available:', typeof auth !== 'undefined');
-            console.log('DB available:', typeof db !== 'undefined');
-            
-            // Add global error handler for mobile
-            window.addEventListener('error', function(e) {
-                console.error('Global error on mobile:', e.error, e.message, e.filename, e.lineno);
-            });
-            
-            window.addEventListener('unhandledrejection', function(e) {
-                console.error('Unhandled promise rejection on mobile:', e.reason);
-            });
-        }
+    // Mobile-specific initialization
+    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    // Enhanced mobile debugging
+    if (isMobile) {
+        console.log('Mobile device detected:', navigator.userAgent);
+        console.log('Firebase available:', typeof firebase !== 'undefined');
+        console.log('Auth available:', typeof auth !== 'undefined');
+        console.log('DB available:', typeof db !== 'undefined');
+        
+        // Add global error handler for mobile
+        window.addEventListener('error', function(e) {
+            console.error('Global error on mobile:', e.error, e.message, e.filename, e.lineno);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection on mobile:', e.reason);
+        });
+    }
 
     // Enhanced mobile compatibility check
     function checkMobileCompatibility() {
@@ -567,27 +572,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
-    } // End of initializeAuth function
-
-    // Check if Firebase is ready, if not wait for it
-    if (window.firebaseReady && typeof auth !== 'undefined' && typeof db !== 'undefined') {
-        initializeAuth();
-    } else {
-        console.log('Waiting for Firebase to initialize...');
-        window.addEventListener('firebaseInitialized', function() {
-            console.log('Firebase initialized, starting auth...');
-            initializeAuth();
-        });
-        
-        // Fallback: if the event doesn't fire, try again after a delay
-        setTimeout(function() {
-            if (typeof auth !== 'undefined' && typeof db !== 'undefined') {
-                console.log('Firebase ready via fallback, starting auth...');
-                initializeAuth();
-            } else {
-                console.error('Firebase failed to initialize properly');
-                alert('Failed to load authentication service. Please refresh the page.');
-            }
-        }, 3000);
-    }
 });
