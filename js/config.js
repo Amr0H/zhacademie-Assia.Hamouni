@@ -16,18 +16,17 @@
         db = firebase.firestore();
         storage = firebase.storage();
         
-        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
-            if (err.code == 'failed-precondition') {
-                console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-            } else if (err.code == 'unimplemented') {
-                console.warn('The current browser does not support persistence.');
-            }
-        });
+        if ('serviceWorker' in navigator && !navigator.userAgent.includes('Safari')) {
+            db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+                if (err.code == 'failed-precondition') {
+                    console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+                } else if (err.code == 'unimplemented') {
+                    console.warn('The current browser does not support persistence.');
+                }
+            });
+        }
         
-
-        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
-            console.warn('Auth persistence setup failed:', error);
-        });
+        auth.useDeviceLanguage();
         
         console.log('Firebase initialized successfully');
         
