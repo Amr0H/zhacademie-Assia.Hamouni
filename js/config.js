@@ -68,3 +68,11 @@
     window.db = db;
     window.storage = storage;
     window.cloudinaryConfig = CLOUDINARY_CONFIG;
+
+    // Signal that Firebase is ready
+    window.firebaseReady = true;
+    
+    // Dispatch a custom event for mobile compatibility
+    window.dispatchEvent(new CustomEvent('firebaseInitialized', {
+        detail: { auth, db, storage }
+    }));
