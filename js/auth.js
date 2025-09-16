@@ -1,17 +1,108 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Auth.js loaded');
+    
+    window.addEventListener('error', function(e) {
+        console.error('Global error caught:', e.error);
+        if (typeof showError === 'function') {
+            showError('An unexpected error occurred. Please refresh the page and try again.');
+        } else {
+            alert('An unexpected error occurred. Please refresh the page and try again.');
+        }
+    });
+    
+    window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled promise rejection:', e.reason);
+        if (typeof showError === 'function') {
+            showError('An unexpected error occurred. Please refresh the page and try again.');
+        } else {
+            alert('An unexpected error occurred. Please refresh the page and try again.');
+        }
+    });
+    
+    function showError(message) {
+        console.log('showError called:', message);
+        try {
+            const notification = document.createElement('div');
+            notification.className = 'notification error';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        } catch (notificationError) {
+            console.error('Error showing notification:', notificationError);
+            alert(message);
+        }
+    }
+
+    function showSuccess(message) {
+        console.log('showSuccess called:', message);
+        try {
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        } catch (notificationError) {
+            console.error('Error showing notification:', notificationError);
+            alert(message);
+        }
+    }
+    
     if (typeof firebase === 'undefined') {
+        console.error('Firebase not loaded');
         showError('Application failed to load. Please refresh the page and try again.');
         return;
     }
     
-    if (!auth || !db) {
+    console.log('Firebase loaded, checking auth and db...');
+    
+    if (!window.auth || !window.db) {
+        console.error('Auth or DB not initialized:', { auth: window.auth, db: window.db });
         setTimeout(() => {
-            if (!auth || !db) {
+            if (!window.auth || !window.db) {
+                console.error('Auth or DB still not ready after 3 seconds');
                 showError('Application services not ready. Please refresh the page and try again.');
             }
         }, 3000);
         return;
     }
+    
+    console.log('Auth and DB ready');
     
     const switchButtons = document.querySelectorAll('.switch-btn');
     const authForms = document.querySelectorAll('.auth-form');
@@ -19,261 +110,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const signupForm = document.getElementById('signupForm');
     const loadingModal = document.getElementById('loadingModal');
 
-    switchButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const formType = btn.dataset.form;
-            
-            switchButtons.forEach(b => b.classList.remove('active'));
-            authForms.forEach(f => f.classList.remove('active'));
-            
-            btn.classList.add('active');
-            document.getElementById(formType + 'Form').classList.add('active');
-        });
-    });
-
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!email) {
-            showError('Please enter your email address.');
-            return;
-        }
-        
-        if (!password) {
-            showError('Please enter your password.');
-            return;
-        }
-        
-        if (!isValidEmail(email)) {
-            showError('Please enter a valid email address (example: user@domain.com).');
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-            
-            const requestQuery = await withTimeout(db.collection('userRequests').where('email', '==', email).get());
-            
-            if (!requestQuery.empty) {
-                const requestDoc = requestQuery.docs[0];
-                const requestData = requestDoc.data();
-                
-                if (requestData.status === 'pending') {
-                    hideLoading();
-                    showError('Your account is pending approval. Please wait for an administrator to approve your request.');
-                    return;
-                }
-                
-                if (requestData.status === 'rejected') {
-                    hideLoading();
-                    showError('Your account request was rejected. Please contact the administrator for more information.');
-                    return;
-                }
-            }
-            
-            const userCredential = await withTimeout(auth.signInWithEmailAndPassword(email, password));
-            const user = userCredential.user;
-            
-            showSuccess('Welcome back to UniTrack!');
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-        } catch (error) {
-            hideLoading();
-            console.error('Login error:', error);
-            console.error('Error code:', error.code);
-            console.error('Error message:', error.message);
-            
-            if (error.code === 'auth/user-not-found') {
-                try {
-                    const requestQuery = await withTimeout(db.collection('userRequests').where('email', '==', email).get());
-                    if (!requestQuery.empty) {
-                        const requestData = requestQuery.docs[0].data();
-                        if (requestData.status === 'pending') {
-                            showError('Your account is pending approval. Please wait for an administrator to approve your request.');
-                        } else if (requestData.status === 'rejected') {
-                            showError('Your account request was rejected. Please contact the administrator for more information.');
-                        } else {
-                            showError('Please wait for your approved account to be activated.');
-                        }
-                    } else {
-                        showError('No account found with this email. Please sign up first.');
-                    }
-                } catch (dbError) {
-                    console.error('Database error:', dbError);
-                    showError('No account found with this email. Please sign up first.');
-                }
-            } else if (error.code === 'auth/network-request-failed') {
-                showError('Network connection error. Please check your internet connection and try again.');
-            } else if (error.code === 'auth/too-many-requests') {
-                showError('Too many failed login attempts. Please wait a moment and try again.');
-            } else if (error.code === 'auth/operation-not-allowed') {
-                showError('Email/password sign-in is not enabled. Please contact support.');
-            } else if (error.code === 'auth/app-deleted') {
-                showError('Authentication service is unavailable. Please try again later.');
-            } else if (error.code === 'auth/invalid-api-key') {
-                showError('Authentication configuration error. Please contact support.');
-            } else if (error.message === 'Operation timed out') {
-                showError('Request timed out. Please check your connection and try again.');
-            } else if (error.code === 'auth/web-storage-unsupported' || error.code === 'auth/quota-exceeded') {
-                showError('Browser storage is full or disabled. Please clear your browser cache and try again.');
-            } else if (error.code === 'auth/timeout') {
-                showError('Request timed out. Please check your connection and try again.');
-            } else if (error.code === 'auth/cors-unsupported') {
-                showError('Browser security settings are blocking the request. Please try a different browser.');
-            } else {
-                const errorMessage = getErrorMessage(error.code);
-                showError(errorMessage);
-            }
-        }
-    });
-
-    signupForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('signupName').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const password = document.getElementById('signupPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (!name) {
-            showError('Please enter your full name.');
-            return;
-        }
-        
-        if (name.length < 2) {
-            showError('Please enter a valid name (at least 2 characters).');
-            return;
-        }
-        
-        if (!email) {
-            showError('Please enter your email address.');
-            return;
-        }
-        
-        if (!isValidEmail(email)) {
-            showError('Please enter a valid email address (example: user@domain.com).');
-            return;
-        }
-        
-        if (!password) {
-            showError('Please enter a password.');
-            return;
-        }
-        
-        if (password.length < 6) {
-            showError('Password must be at least 6 characters long.');
-            return;
-        }
-        
-        if (!isStrongPassword(password)) {
-            showError('Password must contain at least one letter and one number for better security.');
-            return;
-        }
-        
-        if (!confirmPassword) {
-            showError('Please confirm your password.');
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            showError('Passwords do not match. Please check and try again.');
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            await withTimeout(db.collection('userRequests').add({
-                name: name,
-                email: email,
-                password: password,
-                status: 'pending',
-                requestedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }));
-            
-            hideLoading();
-            showSuccess('Account request submitted! Please wait for admin approval.');
-            
-            setTimeout(() => {
-                signupForm.reset();
-                switchButtons[0].click();
-            }, 2000);
-        } catch (error) {
-            hideLoading();
-            if (error.message === 'Operation timed out') {
-                showError('Request timed out. Please check your connection and try again.');
-            } else {
-                showError('Error submitting request. Please try again.');
-            }
-        }
-    });
-
-    auth.onAuthStateChanged((user) => {
-        if (user && window.location.pathname.includes('index.html')) {
-            window.location.href = 'dashboard.html';
-        }
-    });
-
     function showLoading() {
-        loadingModal.classList.add('show');
+        if (loadingModal) {
+            loadingModal.classList.add('show');
+        }
     }
 
     function hideLoading() {
-        loadingModal.classList.remove('show');
+        if (loadingModal) {
+            loadingModal.classList.remove('show');
+        }
+    }
+    
+    function withTimeout(promise, timeoutMs = 15000) {
+        return Promise.race([
+            promise,
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
+            )
+        ]);
+    }
+    
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
 
-    function showError(message) {
-        const notification = document.createElement('div');
-        notification.className = 'notification error';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 4000);
+    function isStrongPassword(password) {
+        const hasLetter = /[a-zA-Z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        return hasLetter && hasNumber;
     }
-
-    function showSuccess(message) {
-        const notification = document.createElement('div');
-        notification.className = 'notification success';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 4000);
-    }
-
+    
     function getErrorMessage(errorCode) {
         const errorMessages = {
             'auth/user-not-found': 'No account exists with this email address. Please check your email or create a new account.',
@@ -331,59 +199,222 @@ document.addEventListener('DOMContentLoaded', function() {
         return `Error (${errorCode}): An unexpected error occurred. Please try again or contact support if the problem persists.`;
     }
 
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+    if (!switchButtons.length || !loginForm || !signupForm) {
+        console.error('Required DOM elements not found');
+        showError('Page not loaded properly. Please refresh and try again.');
+        return;
     }
 
-    function isStrongPassword(password) {
-        const hasLetter = /[a-zA-Z]/.test(password);
-        const hasNumber = /\d/.test(password);
-        return hasLetter && hasNumber;
-    }
+    switchButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const formType = btn.dataset.form;
+            
+            switchButtons.forEach(b => b.classList.remove('active'));
+            authForms.forEach(f => f.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(formType + 'Form').classList.add('active');
+        });
+    });
 
-    function withTimeout(promise, timeoutMs = 15000) {
-        return Promise.race([
-            promise,
-            new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
-            )
-        ]);
-    }
-
-    function validateForm(formData) {
-        const errors = [];
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Login form submitted');
         
-        if (formData.name !== undefined) {
-            if (!formData.name.trim()) {
-                errors.push('Name is required');
-            } else if (formData.name.trim().length < 2) {
-                errors.push('Name must be at least 2 characters long');
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        console.log('Email:', email);
+        
+        if (!email) {
+            showError('Please enter your email address.');
+            return;
+        }
+        
+        if (!password) {
+            showError('Please enter your password.');
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            showError('Please enter a valid email address (example: user@domain.com).');
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            console.log('Setting persistence...');
+            await window.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            
+            console.log('Checking user requests...');
+            const requestQuery = await withTimeout(window.db.collection('userRequests').where('email', '==', email).get());
+            
+            if (!requestQuery.empty) {
+                const requestDoc = requestQuery.docs[0];
+                const requestData = requestDoc.data();
+                
+                if (requestData.status === 'pending') {
+                    hideLoading();
+                    showError('Your account is pending approval. Please wait for an administrator to approve your request.');
+                    return;
+                }
+                
+                if (requestData.status === 'rejected') {
+                    hideLoading();
+                    showError('Your account request was rejected. Please contact the administrator for more information.');
+                    return;
+                }
+            }
+            
+            console.log('Attempting login...');
+            const userCredential = await withTimeout(window.auth.signInWithEmailAndPassword(email, password));
+            const user = userCredential.user;
+            
+            console.log('Login successful:', user.uid);
+            showSuccess('Welcome back to UniTrack!');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+        } catch (error) {
+            hideLoading();
+            console.error('Login error:', error);
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
+            
+            if (error.code === 'auth/user-not-found') {
+                try {
+                    const requestQuery = await withTimeout(window.db.collection('userRequests').where('email', '==', email).get());
+                    if (!requestQuery.empty) {
+                        const requestData = requestQuery.docs[0].data();
+                        if (requestData.status === 'pending') {
+                            showError('Your account is pending approval. Please wait for an administrator to approve your request.');
+                        } else if (requestData.status === 'rejected') {
+                            showError('Your account request was rejected. Please contact the administrator for more information.');
+                        } else {
+                            showError('Please wait for your approved account to be activated.');
+                        }
+                    } else {
+                        showError('No account found with this email. Please sign up first.');
+                    }
+                } catch (dbError) {
+                    console.error('Database error:', dbError);
+                    showError('No account found with this email. Please sign up first.');
+                }
+            } else if (error.code === 'auth/network-request-failed') {
+                showError('Network connection error. Please check your internet connection and try again.');
+            } else if (error.code === 'auth/too-many-requests') {
+                showError('Too many failed login attempts. Please wait a moment and try again.');
+            } else if (error.code === 'auth/operation-not-allowed') {
+                showError('Email/password sign-in is not enabled. Please contact support.');
+            } else if (error.code === 'auth/app-deleted') {
+                showError('Authentication service is unavailable. Please try again later.');
+            } else if (error.code === 'auth/invalid-api-key') {
+                showError('Authentication configuration error. Please contact support.');
+            } else if (error.message === 'Operation timed out') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else if (error.code === 'auth/web-storage-unsupported' || error.code === 'auth/quota-exceeded') {
+                showError('Browser storage is full or disabled. Please clear your browser cache and try again.');
+            } else if (error.code === 'auth/timeout') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else if (error.code === 'auth/cors-unsupported') {
+                showError('Browser security settings are blocking the request. Please try a different browser.');
+            } else {
+                const errorMessage = getErrorMessage(error.code);
+                showError(errorMessage);
             }
         }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Signup form submitted');
         
-        if (!formData.email) {
-            errors.push('Email is required');
-        } else if (!isValidEmail(formData.email)) {
-            errors.push('Please enter a valid email address');
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (!name) {
+            showError('Please enter your full name.');
+            return;
         }
         
-        if (!formData.password) {
-            errors.push('Password is required');
-        } else if (formData.password.length < 6) {
-            errors.push('Password must be at least 6 characters long');
+        if (name.length < 2) {
+            showError('Please enter a valid name (at least 2 characters).');
+            return;
         }
         
-        if (formData.confirmPassword !== undefined) {
-            if (!formData.confirmPassword) {
-                errors.push('Please confirm your password');
-            } else if (formData.password !== formData.confirmPassword) {
-                errors.push('Passwords do not match');
+        if (!email) {
+            showError('Please enter your email address.');
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            showError('Please enter a valid email address (example: user@domain.com).');
+            return;
+        }
+        
+        if (!password) {
+            showError('Please enter a password.');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showError('Password must be at least 6 characters long.');
+            return;
+        }
+        
+        if (!isStrongPassword(password)) {
+            showError('Password must contain at least one letter and one number for better security.');
+            return;
+        }
+        
+        if (!confirmPassword) {
+            showError('Please confirm your password.');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            showError('Passwords do not match. Please check and try again.');
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            await withTimeout(window.db.collection('userRequests').add({
+                name: name,
+                email: email,
+                password: password,
+                status: 'pending',
+                requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }));
+            
+            hideLoading();
+            showSuccess('Account request submitted! Please wait for admin approval.');
+            
+            setTimeout(() => {
+                signupForm.reset();
+                switchButtons[0].click();
+            }, 2000);
+        } catch (error) {
+            hideLoading();
+            console.error('Signup error:', error);
+            if (error.message === 'Operation timed out') {
+                showError('Request timed out. Please check your connection and try again.');
+            } else {
+                showError('Error submitting request. Please try again.');
             }
         }
-        
-        return errors;
-    }
+    });
+
+    window.auth.onAuthStateChanged((user) => {
+        console.log('Auth state changed:', user ? user.uid : 'no user');
+        if (user && window.location.pathname.includes('index.html')) {
+            window.location.href = 'dashboard.html';
+        }
+    });
 
     const style = document.createElement('style');
     style.textContent = `
@@ -452,4 +483,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
+    
+    console.log('Auth.js initialization complete');
 });
